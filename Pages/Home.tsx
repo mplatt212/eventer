@@ -12,8 +12,8 @@ export interface IProps {
 
 const Home = ({navigation}: IProps) => {
   return (
-    <View>
-      <View style={{paddingHorizontal: 25}}>
+    <View style={{flex: 1}}>
+      <View style={{paddingHorizontal: 25, flex: 1}}>
         <Headline style={{marginTop: 25}}>Hello, Matt!</Headline>
         <Paragraph>
           Your next vacation is in 10 days! It's never too early to start

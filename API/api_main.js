@@ -34,21 +34,46 @@ app.get('/events', (req, res) => {
   });
 });
 
-app.post('/new_event/:event', (req, res) => {
+app.post('/new_event', (req, res) => {
   console.log(req.body);
+  const start_date = new Date(req.body.startDate)
+    .toISOString()
+    .slice(0, 19)
+    .replace('T', ' ');
+  const end_date = new Date(req.body.endDate)
+    .toISOString()
+    .slice(0, 19)
+    .replace('T', ' ');
   connection.connect(err => {
     if (err) {
       throw err;
     }
-    console.log('API data', req.body);
-    console.log(res);
     connection.query(
-      `INSERT INTO eventer_db.events (name, location, start_date, end_date) VALUES ('${req.body.name}', '${req.body.location}', '${req.body.startDate}', '${req.body.endDate}')`,
+      `INSERT INTO eventer_db.events (name, location, start_date, end_date) VALUES ('${req.body.name}', '${req.body.location}', '${start_date}', '${end_date}')`,
       (error, result, fields) => {
         if (error) {
           throw error;
         }
 
+        res.send(result);
+      },
+    );
+  });
+});
+
+app.post('/delete_event/:id', (req, res) => {
+  console.log('delete API');
+  console.log('event id', req.params.id);
+  connection.connect(err => {
+    if (err) {
+      throw err;
+    }
+    connection.query(
+      `DELETE FROM eventer_db.events WHERE event_id = ${req.params.id}`,
+      (error, result, fields) => {
+        if (error) {
+          throw error;
+        }
         res.send(result);
       },
     );

@@ -13,6 +13,7 @@ import {
 } from 'react-native-paper';
 import {DatePickerModal} from 'react-native-paper-dates';
 import {FormBuilder} from 'react-native-paper-form-builder';
+import {eventFetch} from '../Fetches/EventFetch';
 import store from '../Store/Store';
 
 interface IDates {
@@ -79,10 +80,11 @@ const AddEventModal = () => {
       },
       body: JSON.stringify(event),
     };
-    console.log('submitted event', event);
     await fetch(`http://10.0.2.2:3000/new_event/${event}`, options)
       .then(r => r.json())
-      .then(data => console.log(data));
+      .then(data => console.log(data))
+      .then(() => eventFetch());
+    store.setNewEventModalOpen(false);
   };
 
   return (

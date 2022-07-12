@@ -1,6 +1,7 @@
 import {makeAutoObservable} from 'mobx';
 
 export interface IEvent {
+  event_id: number;
   name: string;
   location: string;
   start_date: string;

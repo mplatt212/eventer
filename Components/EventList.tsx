@@ -1,14 +1,19 @@
 import React, {useEffect, useState} from 'react';
 import {FlatList, RefreshControl, View} from 'react-native';
-import {Headline, Text} from 'react-native-paper';
+import {Headline, IconButton, Text} from 'react-native-paper';
 import {IProps} from '../Pages/Home';
 import store from '../Store/Store';
 import {eventFetch} from '../Fetches/EventFetch';
 import {observer} from 'mobx-react';
 import AddEventModal from './AddEventModal';
+import {eventDelete} from '../Fetches/EventDelete';
 
 const EventList = ({navigation}: IProps) => {
   const [refreshEvents, setRefreshEvents] = useState<boolean>(false);
+
+  const handleDeleteEvent = (id: number) => {
+    eventDelete(id);
+  };
 
   useEffect(() => {
     setRefreshEvents(true);
@@ -16,7 +21,7 @@ const EventList = ({navigation}: IProps) => {
   }, []);
 
   return (
-    <View>
+    <View style={{flex: 1}}>
       <AddEventModal />
       <FlatList
         refreshControl={
@@ -29,6 +34,7 @@ const EventList = ({navigation}: IProps) => {
         renderItem={({item: event}) => (
           <View
             style={{
+              flex: 1,
               backgroundColor: '#F2F2FF',
               margin: 10,
               padding: 10,
@@ -45,7 +51,19 @@ const EventList = ({navigation}: IProps) => {
                 event: event,
               })
             }>
-            <Headline>{event.name}</Headline>
+            <View style={{display: 'flex', flexDirection: 'row'}}>
+              <Headline style={{flex: 10}}>{event.name}</Headline>
+              <IconButton
+                icon="pencil"
+                style={{flex: 1}}
+                onPress={() => console.log('edit')}
+              />
+              <IconButton
+                icon="delete"
+                style={{flex: 1}}
+                onPress={() => handleDeleteEvent(event.event_id)}
+              />
+            </View>
             <View
               style={{
                 display: 'flex',
