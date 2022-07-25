@@ -35,7 +35,7 @@ app.get('/events', (req, res) => {
 });
 
 app.post('/new_event', (req, res) => {
-  console.log(req.body);
+  console.log('body', req.body);
   const start_date = new Date(req.body.startDate)
     .toISOString()
     .slice(0, 19)
@@ -48,16 +48,29 @@ app.post('/new_event', (req, res) => {
     if (err) {
       throw err;
     }
-    connection.query(
-      `INSERT INTO eventer_db.events (name, location, start_date, end_date) VALUES ('${req.body.name}', '${req.body.location}', '${start_date}', '${end_date}')`,
-      (error, result, fields) => {
-        if (error) {
-          throw error;
-        }
+    if (req.body.id < 0) {
+      connection.query(
+        `INSERT INTO eventer_db.events (name, location, start_date, end_date) VALUES ('${req.body.name}', '${req.body.location}', '${start_date}', '${end_date}')`,
+        (error, result, fields) => {
+          if (error) {
+            throw error;
+          }
 
-        res.send(result);
-      },
-    );
+          res.send(result);
+        },
+      );
+    } else {
+      connection.query(
+        `UPDATE eventer_db.events set name='${req.body.name}', location='${req.body.location}', start_date='${start_date}', end_date='${end_date}' WHERE event_id = ${req.body.id}`,
+        (error, result, fields) => {
+          if (error) {
+            throw error;
+          }
+
+          res.send(result);
+        },
+      );
+    }
   });
 });
 
@@ -70,6 +83,23 @@ app.post('/delete_event/:id', (req, res) => {
     }
     connection.query(
       `DELETE FROM eventer_db.events WHERE event_id = ${req.params.id}`,
+      (error, result, fields) => {
+        if (error) {
+          throw error;
+        }
+        res.send(result);
+      },
+    );
+  });
+});
+
+app.post('/fetch_event/:id', (req, res) => {
+  connection.connect(err => {
+    if (err) {
+      throw err;
+    }
+    connection.query(
+      `SELECT * FROM eventer_db.events WHERE event_id = ${req.params.id}`,
       (error, result, fields) => {
         if (error) {
           throw error;

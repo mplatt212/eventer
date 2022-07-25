@@ -131,7 +131,7 @@ const AddEventModal = ({edit, setEdit}: IProps) => {
   return (
     <Portal>
       <Modal
-        visible={store.newEventModalOpen}
+        visible={store.newMealModalOpen}
         dismissable={false}
         style={{
           backgroundColor: '#FFF',

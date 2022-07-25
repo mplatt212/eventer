@@ -8,7 +8,7 @@ import {IProps} from './Home';
 
 const EventDetails = ({route, navigation}: IProps) => {
   const {event} = route.params;
-  const {name, location, startDate, endDate, participantCount} = event;
+  const {name, location, start_date, end_date, participant_count} = event;
 
   return (
     <View style={{marginTop: 25, paddingHorizontal: 25}}>
@@ -21,9 +21,12 @@ const EventDetails = ({route, navigation}: IProps) => {
           marginTop: 20,
         }}>
         <Text>
-          {startDate} - {endDate}
+          {new Date(start_date).getMonth() + 1}/{new Date(start_date).getDate()}
+          /{new Date(start_date).getFullYear()} -
+          {new Date(end_date).getMonth() + 1}/{new Date(end_date).getDate()}/
+          {new Date(end_date).getFullYear()}
         </Text>
-        <Text>{participantCount} Participants</Text>
+        <Text>{participant_count ? participant_count : 0} Participants</Text>
       </View>
       <Text>{location}</Text>
       <LocationInfo />

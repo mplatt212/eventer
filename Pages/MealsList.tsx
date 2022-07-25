@@ -1,11 +1,21 @@
-import React from 'react';
+import {observer} from 'mobx-react';
+import React, {useState} from 'react';
 import {View} from 'react-native';
-import {Headline, Surface, Text} from 'react-native-paper';
+import {Button, Headline, Surface, Text} from 'react-native-paper';
+import AddDateModal from '../Components/AddDateModal';
+import store from '../Store/Store';
 import {IProps} from './Home';
 
 const MealsList = ({navigation}: IProps) => {
+  const [edit, setEdit] = useState<boolean>(false);
+
+  const handleAddDate = () => {
+    store.setNewDateModalOpen(true);
+  };
+
   return (
     <View style={{paddingHorizontal: 25}}>
+      <AddDateModal edit={edit} setEdit={setEdit} />
       <Headline style={{marginTop: 25, textAlign: 'center'}}>
         Meal Plan
       </Headline>
@@ -49,8 +59,11 @@ const MealsList = ({navigation}: IProps) => {
           </Text>
         </View>
       </Surface>
+      <Button mode="contained" style={{marginTop: 15}} onPress={handleAddDate}>
+        Add Date
+      </Button>
     </View>
   );
 };
 
-export default MealsList;
+export default observer(MealsList);
