@@ -102,7 +102,7 @@ const AddEventModal = ({edit, setEdit}: IProps) => {
     };
     await fetch('http://10.0.2.2:3000/new_event', options)
       .then(r => r.json())
-      .then(data => console.log(data))
+      .then(data => console.log('/new_event', data))
       .then(() => eventFetch());
     setEdit(false);
     store.setNewEventModalOpen(false);

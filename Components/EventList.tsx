@@ -95,7 +95,7 @@ const EventList = ({navigation}: IProps) => {
               navigation.navigate('Event Details', {
                 event: event,
               });
-              console.log('passed event', event);
+              store.setSelectedEvent(event);
             }}>
             <View style={{display: 'flex', flexDirection: 'row'}}>
               <Headline style={{flex: 10}}>{event.name}</Headline>

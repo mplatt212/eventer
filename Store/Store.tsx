@@ -1,5 +1,7 @@
 import {makeAutoObservable} from 'mobx';
 
+export type MealTypes = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
+
 export interface IEvent {
   event_id: number;
   name: string;
@@ -9,9 +11,27 @@ export interface IEvent {
   participant_count: number;
 }
 
+export interface IMeal {
+  meal_id: number;
+  meal: MealTypes;
+}
+
+export interface IMealDay {
+  meal_id: number;
+  event_id: number;
+  date: string;
+  meals: IMeal[];
+}
+
 export class Store {
+  //Event Variables
   events: IEvent[] = [];
   selectedEvent: IEvent | undefined = undefined;
+
+  //Meal Variables
+  meals: IMealDay[] = [];
+
+  //Modal Variables
   newEventModalOpen: boolean = false;
   newDateModalOpen: boolean = false;
   newMealModalOpen: boolean = false;
@@ -26,6 +46,10 @@ export class Store {
 
   setSelectedEvent(event: IEvent) {
     this.selectedEvent = event;
+  }
+
+  setMeals(meals: IMealDay[]) {
+    this.meals = meals;
   }
 
   setNewEventModalOpen(bool: boolean) {

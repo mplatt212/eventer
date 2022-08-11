@@ -1,16 +1,18 @@
 import store from '../Store/Store';
 
-export const eventFetch = async () => {
+export const mealFetch = async () => {
   const options = {
     method: 'GET',
   };
 
   try {
-    await fetch('http://10.0.2.2:3000/events', options)
+    await fetch(
+      `http://10.0.2.2:3000/meals/${store.selectedEvent?.event_id}`,
+      options,
+    )
       .then(r => r.json())
       .then(data => {
-        console.log('/events', data);
-        store.setEvents(data);
+        store.setMeals(data);
       });
   } catch (err) {
     console.log(err);

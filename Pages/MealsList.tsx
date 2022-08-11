@@ -1,8 +1,11 @@
+import {runInAction} from 'mobx';
 import {observer} from 'mobx-react';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import {Button, Headline, Surface, Text} from 'react-native-paper';
 import AddDateModal from '../Components/AddDateModal';
+import {mealFetch} from '../Fetches/MealFetch';
 import store from '../Store/Store';
 import {IProps} from './Home';
 
@@ -13,52 +16,104 @@ const MealsList = ({navigation}: IProps) => {
     store.setNewDateModalOpen(true);
   };
 
+  useEffect(() => {
+    runInAction(() => {
+      mealFetch();
+    });
+  }, []);
+
   return (
     <View style={{paddingHorizontal: 25}}>
       <AddDateModal edit={edit} setEdit={setEdit} />
       <Headline style={{marginTop: 25, textAlign: 'center'}}>
         Meal Plan
       </Headline>
-      <Surface
-        style={{
-          backgroundColor: '#F2F2FF',
-          margin: 10,
-          padding: 10,
-          borderWidth: 1,
-          borderColor: '#000',
-          borderRadius: 5,
-          shadowColor: 'black',
-          shadowOpacity: 1,
-          shadowRadius: 2,
-          elevation: 7,
-        }}
-        onTouchStart={() => navigation.navigate('Meal Details')}>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
-          <View style={{maxWidth: '50%'}}>
-            <Headline style={{fontSize: 20}}>Day 1</Headline>
-            <Text style={{fontStyle: 'italic', marginTop: 10}}>Breakfast</Text>
-            <Text>Eggs, bacon and toast.</Text>
-            <Text style={{fontStyle: 'italic', marginTop: 10}}>Lunch</Text>
-            <Text>Sandwiches, chips and fruit.</Text>
-          </View>
-          <View style={{maxWidth: '50%'}}>
-            <Headline style={{fontSize: 20}}>October 1st</Headline>
-            <Text style={{fontStyle: 'italic', marginTop: 10}}>Dinner</Text>
-            <Text>Cheeseburgers, fries and roasted veggies.</Text>
-          </View>
-        </View>
-        <View style={{alignItems: 'center'}}>
-          <Headline style={{fontSize: 20}}>Ingredients</Headline>
-          <Text style={{fontStyle: 'italic'}}>
-            Breakfast: 5, Lunch: 7, Dinner: 10
-          </Text>
-        </View>
-      </Surface>
+      <FlatList
+        data={store.meals}
+        style={{maxHeight: '80%'}}
+        renderItem={({item}) => (
+          <Surface
+            style={{
+              backgroundColor: '#F2F2FF',
+              margin: 10,
+              padding: 10,
+              borderWidth: 1,
+              borderColor: '#000',
+              borderRadius: 5,
+              shadowColor: 'black',
+              shadowOpacity: 1,
+              shadowRadius: 2,
+              elevation: 7,
+            }}
+            onTouchStart={() => navigation.navigate('Meal Details')}>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View style={{maxWidth: '50%'}}>
+                <Headline style={{fontSize: 20}}>
+                  Day{' '}
+                  {new Date(item.date).getDate() -
+                    new Date(
+                      store.selectedEvent?.start_date as string,
+                    ).getDate() +
+                    1}
+                </Headline>
+                {item.meals.map(el => el.meal).includes('Breakfast') && (
+                  <View>
+                    <Text style={{fontStyle: 'italic', marginTop: 10}}>
+                      Breakfast
+                    </Text>
+                    <Text>Eggs, bacon and toast.</Text>
+                  </View>
+                )}
+                {item.meals.map(el => el.meal).includes('Lunch') && (
+                  <View>
+                    <Text style={{fontStyle: 'italic', marginTop: 10}}>
+                      Lunch
+                    </Text>
+                    <Text>Sandwiches, chips and fruit.</Text>
+                  </View>
+                )}
+              </View>
+              <View style={{maxWidth: '50%'}}>
+                <Headline style={{fontSize: 20}}>
+                  {new Date(item.date).toLocaleString('default', {
+                    month: 'long',
+                  }) +
+                    ' ' +
+                    new Date(item.date).getDate()}
+                </Headline>
+                {item.meals.map(el => el.meal).includes('Dinner') && (
+                  <View>
+                    <Text style={{fontStyle: 'italic', marginTop: 10}}>
+                      Dinner
+                    </Text>
+                    <Text>Cheeseburgers, fries and roasted veggies.</Text>
+                  </View>
+                )}
+                {item.meals.map(el => el.meal).includes('Snack') && (
+                  <View>
+                    <Text style={{fontStyle: 'italic', marginTop: 10}}>
+                      Snack
+                    </Text>
+                    <Text>Granola bars.</Text>
+                  </View>
+                )}
+              </View>
+            </View>
+            <View style={{alignItems: 'center'}}>
+              <Headline style={{fontSize: 20}}>Ingredients</Headline>
+              <Text style={{fontStyle: 'italic'}}>
+                Breakfast: 5, Lunch: 7, Dinner: 10
+              </Text>
+            </View>
+          </Surface>
+        )}
+      />
+
       <Button mode="contained" style={{marginTop: 15}} onPress={handleAddDate}>
         Add Date
       </Button>

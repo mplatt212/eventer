@@ -110,6 +110,97 @@ app.post('/fetch_event/:id', (req, res) => {
   });
 });
 
+app.post('/new_meal_date/:date/:mealTypes/:event_id', (req, res) => {
+  console.log('params', req.params);
+  connection.connect(err => {
+    if (err) {
+      throw err;
+    }
+
+    const date = new Date(req.params.date)
+      .toISOString()
+      .slice(0, 19)
+      .replace('T', ' ')
+      .split(' ')[0];
+
+    const meals = req.params.mealTypes.split(',');
+
+    for (let x = 0; x < meals.length; x++) {
+      let mealExists = false;
+      connection
+        .promise()
+        .query(
+          `SELECT * FROM eventer_db.meals WHERE event_id = ${req.params.event_id} AND meal_type = '${meals[x]}' AND date = '${date}'`,
+        )
+        .then(result => {
+          if (result[0].length > 0) {
+            mealExists = true;
+          }
+        })
+        .then(() => {
+          if (!mealExists) {
+            connection.query(
+              `INSERT INTO eventer_db.meals (event_id, meal_type, date) VALUES ('${req.params.event_id}', '${meals[x]}', '${date}')`,
+              (error, result, fields) => {
+                if (error) {
+                  throw error;
+                }
+                res.send(result);
+              },
+            );
+          } else {
+            res.status(400).json({
+              status: 400,
+              message: `You already have a ${meals[x]} planned for ${date}.`,
+            });
+          }
+        });
+    }
+  });
+});
+
+app.get('/meals/:event_id', (req, res) => {
+  connection.connect(err => {
+    if (err) {
+      throw err;
+    }
+    let dates;
+    connection.query(
+      `SELECT date FROM eventer_db.meals WHERE event_id = ${req.params.event_id} GROUP BY date`,
+      (error, result, fields) => {
+        if (error) {
+          throw error;
+        }
+        dates = result;
+      },
+    );
+
+    connection.query(
+      `SELECT meal_id, event_id, meal_type as meals, date FROM eventer_db.meals WHERE event_id = ${req.params.event_id}`,
+      (error, result, fields) => {
+        if (error) {
+          throw error;
+        }
+
+        let meals = [];
+        for (let x = 0; x < dates.length; x++) {
+          let meal = {};
+          meal.date = dates[x].date;
+          let mealsArr = [];
+          result.map(el => {
+            if (el.date.getDate() === dates[x].date.getDate()) {
+              mealsArr.push({meal_id: el.meal_id, meal: el.meals});
+            }
+          });
+          meal.meals = mealsArr;
+          meals.push(meal);
+        }
+        res.send(meals);
+      },
+    );
+  });
+});
+
 app.listen(3000, () => {
   console.log('Hello!');
 });

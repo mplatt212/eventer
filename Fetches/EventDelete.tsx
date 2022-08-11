@@ -9,7 +9,7 @@ export const eventDelete = async (id: number) => {
     await fetch(`http://10.0.2.2:3000/delete_event/${id}`, options)
       .then(r => r.json())
       .then(data => {
-        console.log(data);
+        console.log('/delete_event', data);
         eventFetch();
       });
   } catch (err) {
