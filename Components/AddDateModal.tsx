@@ -95,6 +95,9 @@ const AddDateModal = ({edit, setEdit}: IProps) => {
 
   const submitData = async (event: any) => {
     console.log('submit event', event);
+    if (event['Meal Type Picker'] === undefined) {
+      setMealTypeErrorMsg('You must pick at least one meal to plan.');
+    }
     const options = {
       method: 'POST',
       headers: {

@@ -166,7 +166,7 @@ app.get('/meals/:event_id', (req, res) => {
     }
     let dates;
     connection.query(
-      `SELECT date FROM eventer_db.meals WHERE event_id = ${req.params.event_id} GROUP BY date`,
+      `SELECT date FROM eventer_db.meals WHERE event_id = ${req.params.event_id} GROUP BY date ORDER BY date`,
       (error, result, fields) => {
         if (error) {
           throw error;
@@ -176,7 +176,10 @@ app.get('/meals/:event_id', (req, res) => {
     );
 
     connection.query(
-      `SELECT meal_id, event_id, meal_type as meals, date FROM eventer_db.meals WHERE event_id = ${req.params.event_id}`,
+      `SELECT meals.meal_id, event_id, meal_type as meals, date, item_id, group_concat(name) as food_names FROM eventer_db.meals meals
+      LEFT JOIN eventer_db.food_items food on food.meal_id = meals.meal_id
+      WHERE event_id = ${req.params.event_id}
+      GROUP BY meals.meal_id`,
       (error, result, fields) => {
         if (error) {
           throw error;
@@ -189,7 +192,13 @@ app.get('/meals/:event_id', (req, res) => {
           let mealsArr = [];
           result.map(el => {
             if (el.date.getDate() === dates[x].date.getDate()) {
-              mealsArr.push({meal_id: el.meal_id, meal: el.meals});
+              mealsArr.push({
+                meal_id: el.meal_id,
+                meal: el.meals,
+                food_items: el.food_names
+                  ? Array.from(el.food_names.split(','))
+                  : [],
+              });
             }
           });
           meal.meals = mealsArr;
@@ -199,6 +208,18 @@ app.get('/meals/:event_id', (req, res) => {
       },
     );
   });
+});
+
+app.post('/new_menu_item/:meal_id/:name', (req, res) => {
+  connection.query(
+    `INSERT INTO eventer_db.food_items (meal_id, name) VALUES (${req.params.meal_id}, '${req.params.name}')`,
+    (error, result, fields) => {
+      if (error) {
+        throw error;
+      }
+      res.send(result);
+    },
+  );
 });
 
 app.listen(3000, () => {

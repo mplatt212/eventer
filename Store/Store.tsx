@@ -1,4 +1,6 @@
 import {makeAutoObservable} from 'mobx';
+import {makePersistable} from 'mobx-persist-store';
+import localForage from 'localforage';
 
 export type MealTypes = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 
@@ -35,9 +37,16 @@ export class Store {
   newEventModalOpen: boolean = false;
   newDateModalOpen: boolean = false;
   newMealModalOpen: boolean = false;
+  newMenuItemModalOpen: boolean = false;
 
   constructor() {
     makeAutoObservable(this);
+
+    makePersistable(this, {
+      name: 'Store',
+      properties: ['selectedEvent'],
+      storage: localForage,
+    });
   }
 
   setEvents(events: IEvent[]) {
@@ -62,6 +71,10 @@ export class Store {
 
   setNewMealModalOpen(bool: boolean) {
     this.newMealModalOpen = bool;
+  }
+
+  setNewMenuItemModalOpen(bool: boolean) {
+    this.newMenuItemModalOpen = bool;
   }
 }
 

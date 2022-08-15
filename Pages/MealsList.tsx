@@ -45,7 +45,9 @@ const MealsList = ({navigation}: IProps) => {
               shadowRadius: 2,
               elevation: 7,
             }}
-            onTouchStart={() => navigation.navigate('Meal Details')}>
+            onTouchStart={() =>
+              navigation.navigate('Meal Details', {meals: item})
+            }>
             <View
               style={{
                 display: 'flex',
@@ -66,7 +68,26 @@ const MealsList = ({navigation}: IProps) => {
                     <Text style={{fontStyle: 'italic', marginTop: 10}}>
                       Breakfast
                     </Text>
-                    <Text>Eggs, bacon and toast.</Text>
+                    <Text>
+                      {item.meals.map((el: any) => {
+                        if (
+                          el.meal === 'Breakfast' &&
+                          el.food_items.length > 0
+                        ) {
+                          return el.food_items.map(
+                            (food: any, index: number) => {
+                              if (index !== el.food_items.length - 1) {
+                                return <Text key={index}>{food} | </Text>;
+                              } else {
+                                return <Text key={index}>{food}</Text>;
+                              }
+                            },
+                          );
+                        } else {
+                          return '';
+                        }
+                      })}
+                    </Text>
                   </View>
                 )}
                 {item.meals.map(el => el.meal).includes('Lunch') && (
@@ -74,7 +95,23 @@ const MealsList = ({navigation}: IProps) => {
                     <Text style={{fontStyle: 'italic', marginTop: 10}}>
                       Lunch
                     </Text>
-                    <Text>Sandwiches, chips and fruit.</Text>
+                    <Text>
+                      {item.meals.map((el: any) => {
+                        if (el.meal === 'Lunch' && el.food_items.length > 0) {
+                          return el.food_items.map(
+                            (food: any, index: number) => {
+                              if (index !== el.food_items.length - 1) {
+                                return <Text key={index}>{food} | </Text>;
+                              } else {
+                                return <Text key={index}>{food}</Text>;
+                              }
+                            },
+                          );
+                        } else {
+                          return '';
+                        }
+                      })}
+                    </Text>
                   </View>
                 )}
               </View>
@@ -91,7 +128,23 @@ const MealsList = ({navigation}: IProps) => {
                     <Text style={{fontStyle: 'italic', marginTop: 10}}>
                       Dinner
                     </Text>
-                    <Text>Cheeseburgers, fries and roasted veggies.</Text>
+                    <Text>
+                      {item.meals.map((el: any) => {
+                        if (el.meal === 'Dinner' && el.food_items.length > 0) {
+                          return el.food_items.map(
+                            (food: any, index: number) => {
+                              if (index !== el.food_items.length - 1) {
+                                return <Text key={index}>{food} | </Text>;
+                              } else {
+                                return <Text key={index}>{food}</Text>;
+                              }
+                            },
+                          );
+                        } else {
+                          return '';
+                        }
+                      })}
+                    </Text>
                   </View>
                 )}
                 {item.meals.map(el => el.meal).includes('Snack') && (
@@ -99,7 +152,23 @@ const MealsList = ({navigation}: IProps) => {
                     <Text style={{fontStyle: 'italic', marginTop: 10}}>
                       Snack
                     </Text>
-                    <Text>Granola bars.</Text>
+                    <Text>
+                      {item.meals.map((el: any) => {
+                        if (el.meal === 'Snack' && el.food_items.length > 0) {
+                          return el.food_items.map(
+                            (food: any, index: number) => {
+                              if (index !== el.food_items.length - 1) {
+                                return <Text key={index}>{food} | </Text>;
+                              } else {
+                                return <Text key={index}>{food}</Text>;
+                              }
+                            },
+                          );
+                        } else {
+                          return '';
+                        }
+                      })}
+                    </Text>
                   </View>
                 )}
               </View>
