@@ -176,7 +176,7 @@ app.get('/meals/:event_id', (req, res) => {
     );
 
     connection.query(
-      `SELECT meals.meal_id, event_id, meal_type as meals, date, item_id, group_concat(name) as food_names FROM eventer_db.meals meals
+      `SELECT meals.meal_id, event_id, meal_type as meals, date, group_concat(item_id) as item_id, group_concat(name) as food_names FROM eventer_db.meals meals
       LEFT JOIN eventer_db.food_items food on food.meal_id = meals.meal_id
       WHERE event_id = ${req.params.event_id}
       GROUP BY meals.meal_id`,
@@ -192,12 +192,25 @@ app.get('/meals/:event_id', (req, res) => {
           let mealsArr = [];
           result.map(el => {
             if (el.date.getDate() === dates[x].date.getDate()) {
+              let foodItemArr = [];
+              if (el.food_names) {
+                for (
+                  let i = 0;
+                  i < Array.from(el.food_names.split(',')).length;
+                  i++
+                ) {
+                  const itemsArr = Array.from(el.food_names.split(','));
+                  const idArr = Array.from(el.item_id.split(','));
+                  foodItemArr.push({
+                    id: Number(idArr[i]),
+                    menu_item: itemsArr[i],
+                  });
+                }
+              }
               mealsArr.push({
                 meal_id: el.meal_id,
                 meal: el.meals,
-                food_items: el.food_names
-                  ? Array.from(el.food_names.split(','))
-                  : [],
+                food_items: el.food_names ? foodItemArr : [],
               });
             }
           });
@@ -217,6 +230,47 @@ app.post('/new_menu_item/:meal_id/:name', (req, res) => {
       if (error) {
         throw error;
       }
+      res.send(result);
+    },
+  );
+});
+
+app.post('/delete_menu_item/:item_id', (req, res) => {
+  connection.query(
+    `DELETE FROM eventer_db.food_items WHERE item_id = ${req.params.item_id}`,
+    (error, result, fields) => {
+      if (error) {
+        throw error;
+      }
+
+      res.send(result);
+    },
+  );
+});
+
+app.get('/ingredients/:event_id/:date', (req, res) => {
+  connection.query(
+    `SELECT ingred_id, item_id as menu_item_id, ing.name as ing, meals.meal_id FROM eventer_db.ingredients ing
+      LEFT JOIN eventer_db.food_items food ON food.item_id = ing.food_item_id
+      LEFT JOIN eventer_db.meals meals ON food.meal_id = meals.meal_id
+      WHERE event_id = ${req.params.event_id} AND date = '${req.params.date}'`,
+    (error, result, fields) => {
+      if (error) {
+        throw error;
+      }
+      res.send(result);
+    },
+  );
+});
+
+app.post('/delete_ingredient/:ing_id', (req, res) => {
+  connection.query(
+    `DELETE FROM eventer_db.ingredients WHERE ingred_id = ${req.params.ing_id}`,
+    (error, result, fields) => {
+      if (error) {
+        throw error;
+      }
+
       res.send(result);
     },
   );

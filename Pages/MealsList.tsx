@@ -77,9 +77,13 @@ const MealsList = ({navigation}: IProps) => {
                           return el.food_items.map(
                             (food: any, index: number) => {
                               if (index !== el.food_items.length - 1) {
-                                return <Text key={index}>{food} | </Text>;
+                                return (
+                                  <Text key={index}>{food.menu_item} | </Text>
+                                );
                               } else {
-                                return <Text key={index}>{food}</Text>;
+                                return (
+                                  <Text key={index}>{food.menu_item}</Text>
+                                );
                               }
                             },
                           );
@@ -101,9 +105,13 @@ const MealsList = ({navigation}: IProps) => {
                           return el.food_items.map(
                             (food: any, index: number) => {
                               if (index !== el.food_items.length - 1) {
-                                return <Text key={index}>{food} | </Text>;
+                                return (
+                                  <Text key={index}>{food.menu_item} | </Text>
+                                );
                               } else {
-                                return <Text key={index}>{food}</Text>;
+                                return (
+                                  <Text key={index}>{food.menu_item}</Text>
+                                );
                               }
                             },
                           );
@@ -134,9 +142,13 @@ const MealsList = ({navigation}: IProps) => {
                           return el.food_items.map(
                             (food: any, index: number) => {
                               if (index !== el.food_items.length - 1) {
-                                return <Text key={index}>{food} | </Text>;
+                                return (
+                                  <Text key={index}>{food.menu_item} | </Text>
+                                );
                               } else {
-                                return <Text key={index}>{food}</Text>;
+                                return (
+                                  <Text key={index}>{food.menu_item}</Text>
+                                );
                               }
                             },
                           );
@@ -158,9 +170,13 @@ const MealsList = ({navigation}: IProps) => {
                           return el.food_items.map(
                             (food: any, index: number) => {
                               if (index !== el.food_items.length - 1) {
-                                return <Text key={index}>{food} | </Text>;
+                                return (
+                                  <Text key={index}>{food.menu_item} | </Text>
+                                );
                               } else {
-                                return <Text key={index}>{food}</Text>;
+                                return (
+                                  <Text key={index}>{food.menu_item}</Text>
+                                );
                               }
                             },
                           );

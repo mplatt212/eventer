@@ -25,6 +25,13 @@ export interface IMealDay {
   meals: IMeal[];
 }
 
+interface IIngredient {
+  ingred_id: number;
+  menu_item_id: number;
+  ing: string;
+  meal_id: number;
+}
+
 export class Store {
   //Event Variables
   events: IEvent[] = [];
@@ -32,6 +39,7 @@ export class Store {
 
   //Meal Variables
   meals: IMealDay[] = [];
+  ingredients: IIngredient[] = [];
 
   //Modal Variables
   newEventModalOpen: boolean = false;
@@ -59,6 +67,10 @@ export class Store {
 
   setMeals(meals: IMealDay[]) {
     this.meals = meals;
+  }
+
+  setIngredients(ing: IIngredient[]) {
+    this.ingredients = ing;
   }
 
   setNewEventModalOpen(bool: boolean) {

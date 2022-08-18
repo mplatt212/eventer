@@ -16,9 +16,10 @@ interface IProps {
   edit: boolean;
   setEdit: Dispatch<SetStateAction<boolean>>;
   mealID: number;
+  handleRefresh: () => void;
 }
 
-const AddMenuItemModal = ({edit, setEdit, mealID}: IProps) => {
+const AddMenuItemModal = ({edit, setEdit, mealID, handleRefresh}: IProps) => {
   //const {colors} = useTheme();
   const [menuItem, setMenuItem] = useState<string>('');
   const {control, setFocus, handleSubmit, setValue} = useForm({
@@ -34,6 +35,7 @@ const AddMenuItemModal = ({edit, setEdit, mealID}: IProps) => {
     setMenuItem('');
     setValue('menu_item', '');
     setEdit(false);
+    handleRefresh();
   };
 
   const submitData = async (item: any) => {
