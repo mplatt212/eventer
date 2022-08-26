@@ -10,7 +10,9 @@ import {
   Text,
   useTheme,
 } from 'react-native-paper';
+import AddIngredientModal from '../Components/AddIngredientModal';
 import AddMenuItemModal from '../Components/AddMenuItemModal';
+import {ingredientDelete} from '../Fetches/IngredientDelete';
 import {ingredientsFetch} from '../Fetches/IngredientsFetch';
 import {mealFetch} from '../Fetches/MealFetch';
 import {menuItemDelete} from '../Fetches/MenuItemDelete';
@@ -24,6 +26,7 @@ const MealDetails = ({route}: IProps) => {
   const [edit, setEdit] = useState<boolean>(false);
   const [mealID, setMealID] = useState<number>(-1);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [menuItemID, setMenuItemID] = useState<number>(-1);
 
   const handleNewMenuItem = (id: number) => {
     store.setNewMenuItemModalOpen(true);
@@ -47,12 +50,22 @@ const MealDetails = ({route}: IProps) => {
     menuItemDelete(id).then(() => handleRefresh());
   };
 
+  const handleAddIngredient = (foodItemID: number) => {
+    store.setNewIngredientModalOpen(true);
+    setMenuItemID(foodItemID);
+  };
+
   const handleDeleteIng = (id: number) => {
     console.log(id);
+    ingredientDelete(id).then(() => {
+      ingredientsFetch(
+        store.selectedEvent?.event_id as number,
+        meals.date.slice(0, 19).replace('T', ' ').split(' ')[0],
+      );
+    });
   };
 
   useEffect(() => {
-    console.log(store.selectedEvent?.event_id as number, meals.date);
     ingredientsFetch(
       store.selectedEvent?.event_id as number,
       meals.date.slice(0, 19).replace('T', ' ').split(' ')[0],
@@ -61,6 +74,12 @@ const MealDetails = ({route}: IProps) => {
 
   return (
     <>
+      <AddIngredientModal
+        edit={edit}
+        setEdit={setEdit}
+        menuItemID={menuItemID}
+        meals={meals}
+      />
       <ScrollView
         style={{paddingHorizontal: 25}}
         refreshControl={
@@ -117,31 +136,32 @@ const MealDetails = ({route}: IProps) => {
                             {food.menu_item}
                           </Text>
                         }
-                        id="1"
-                        style={{borderColor: '#000', borderRightWidth: 1}}>
+                        id="1">
                         {store.ingredients.length > 0 &&
-                          store.ingredients.map((ing: any) => {
-                            if (ing.menu_item_id === food.id) {
-                              return (
-                                <List.Item
-                                  title={ing.ing}
-                                  right={() => (
-                                    <IconButton
-                                      icon="delete"
-                                      style={{flex: 1}}
-                                      onPress={() =>
-                                        handleDeleteIng(ing.ingred_id)
-                                      }
-                                    />
-                                  )}
-                                />
-                              );
-                            }
-                          })}
+                          store.ingredients.map(
+                            (ing: any, ingIndex: number) => {
+                              if (ing.menu_item_id === food.id) {
+                                return (
+                                  <List.Item
+                                    key={ingIndex}
+                                    title={ing.ing}
+                                    right={() => (
+                                      <IconButton
+                                        icon="delete"
+                                        style={{flex: 1}}
+                                        onPress={() =>
+                                          handleDeleteIng(ing.ingred_id)
+                                        }
+                                      />
+                                    )}
+                                  />
+                                );
+                              }
+                            },
+                          )}
                         <View
                           style={{
                             display: 'flex',
-                            flexDirection: 'row',
                             justifyContent: 'space-between',
                             marginHorizontal: 10,
                           }}>
@@ -150,16 +170,19 @@ const MealDetails = ({route}: IProps) => {
                             style={{
                               backgroundColor: colors.accent,
                             }}
-                            onPress={() => console.log('Ingredient added!')}>
+                            icon="plus"
+                            onPress={() => handleAddIngredient(food.id)}>
                             Add Ingredient
                           </Button>
                           <Button
                             mode="contained"
                             style={{
                               backgroundColor: colors.error,
+                              marginTop: 5,
                             }}
+                            icon="delete"
                             onPress={() => handleDeleteMenuItem(food.id)}>
-                            Delete Menu Item
+                            {`Delete ${food.menu_item}`}
                           </Button>
                         </View>
                       </List.Accordion>
@@ -202,13 +225,13 @@ const MealDetails = ({route}: IProps) => {
                           {food.menu_item}
                         </Text>
                       }
-                      id="1"
-                      style={{borderColor: '#000', borderRightWidth: 1}}>
+                      id="1">
                       {store.ingredients.length > 0 &&
-                        store.ingredients.map((ing: any) => {
+                        store.ingredients.map((ing: any, ingIndex: number) => {
                           if (ing.menu_item_id === food.id) {
                             return (
                               <List.Item
+                                key={ingIndex}
                                 title={ing.ing}
                                 right={() => (
                                   <IconButton
@@ -225,7 +248,6 @@ const MealDetails = ({route}: IProps) => {
                       <View
                         style={{
                           display: 'flex',
-                          flexDirection: 'row',
                           justifyContent: 'space-between',
                           marginHorizontal: 10,
                         }}>
@@ -234,16 +256,19 @@ const MealDetails = ({route}: IProps) => {
                           style={{
                             backgroundColor: colors.accent,
                           }}
-                          onPress={() => console.log('Ingredient added!')}>
+                          icon="plus"
+                          onPress={() => handleAddIngredient(food.id)}>
                           Add Ingredient
                         </Button>
                         <Button
                           mode="contained"
                           style={{
                             backgroundColor: colors.error,
+                            marginTop: 5,
                           }}
+                          icon="delete"
                           onPress={() => handleDeleteMenuItem(food.id)}>
-                          Delete Menu Item
+                          {`Delete ${food.menu_item}`}
                         </Button>
                       </View>
                     </List.Accordion>
@@ -254,7 +279,12 @@ const MealDetails = ({route}: IProps) => {
           </List.Section>
           <Button
             mode="contained"
-            style={{maxWidth: '75%', alignSelf: 'center', marginBottom: 10}}>
+            style={{maxWidth: '75%', alignSelf: 'center', marginBottom: 10}}
+            onPress={() =>
+              handleNewMenuItem(
+                meals.meals.filter((el: any) => el.meal === 'Lunch')[0].meal_id,
+              )
+            }>
             Add Menu Item
           </Button>
         </Surface>
@@ -279,13 +309,13 @@ const MealDetails = ({route}: IProps) => {
                           {food.menu_item}
                         </Text>
                       }
-                      id="1"
-                      style={{borderColor: '#000', borderRightWidth: 1}}>
+                      id="1">
                       {store.ingredients.length > 0 &&
-                        store.ingredients.map((ing: any) => {
+                        store.ingredients.map((ing: any, ingIndex: number) => {
                           if (ing.menu_item_id === food.id) {
                             return (
                               <List.Item
+                                key={ingIndex}
                                 title={ing.ing}
                                 right={() => (
                                   <IconButton
@@ -302,7 +332,6 @@ const MealDetails = ({route}: IProps) => {
                       <View
                         style={{
                           display: 'flex',
-                          flexDirection: 'row',
                           justifyContent: 'space-between',
                           marginHorizontal: 10,
                         }}>
@@ -311,16 +340,19 @@ const MealDetails = ({route}: IProps) => {
                           style={{
                             backgroundColor: colors.accent,
                           }}
-                          onPress={() => console.log('Ingredient added!')}>
+                          icon="plus"
+                          onPress={() => handleAddIngredient(food.id)}>
                           Add Ingredient
                         </Button>
                         <Button
                           mode="contained"
                           style={{
                             backgroundColor: colors.error,
+                            marginTop: 5,
                           }}
+                          icon="delete"
                           onPress={() => handleDeleteMenuItem(food.id)}>
-                          Delete Menu Item
+                          {`Delete ${food.menu_item}`}
                         </Button>
                       </View>
                     </List.Accordion>
@@ -331,7 +363,13 @@ const MealDetails = ({route}: IProps) => {
           </List.Section>
           <Button
             mode="contained"
-            style={{maxWidth: '75%', alignSelf: 'center', marginBottom: 10}}>
+            style={{maxWidth: '75%', alignSelf: 'center', marginBottom: 10}}
+            onPress={() =>
+              handleNewMenuItem(
+                meals.meals.filter((el: any) => el.meal === 'Dinner')[0]
+                  .meal_id,
+              )
+            }>
             Add Menu Item
           </Button>
         </Surface>
@@ -357,30 +395,31 @@ const MealDetails = ({route}: IProps) => {
                             {food.menu_item}
                           </Text>
                         }
-                        id="1"
-                        style={{borderColor: '#000', borderRightWidth: 1}}>
+                        id="1">
                         {store.ingredients.length > 0 &&
-                          store.ingredients.map((ing: any) => {
-                            if (ing.menu_item_id === food.id) {
-                              return (
-                                <List.Item
-                                  title={ing.ing}
-                                  right={() => (
-                                    <IconButton
-                                      icon="delete"
-                                      onPress={() =>
-                                        handleDeleteIng(ing.ingred_id)
-                                      }
-                                    />
-                                  )}
-                                />
-                              );
-                            }
-                          })}
+                          store.ingredients.map(
+                            (ing: any, ingIndex: number) => {
+                              if (ing.menu_item_id === food.id) {
+                                return (
+                                  <List.Item
+                                    key={ingIndex}
+                                    title={ing.ing}
+                                    right={() => (
+                                      <IconButton
+                                        icon="delete"
+                                        onPress={() =>
+                                          handleDeleteIng(ing.ingred_id)
+                                        }
+                                      />
+                                    )}
+                                  />
+                                );
+                              }
+                            },
+                          )}
                         <View
                           style={{
                             display: 'flex',
-                            flexDirection: 'row',
                             justifyContent: 'space-between',
                             marginHorizontal: 10,
                           }}>
@@ -389,16 +428,19 @@ const MealDetails = ({route}: IProps) => {
                             style={{
                               backgroundColor: colors.accent,
                             }}
-                            onPress={() => console.log('Ingredient added!')}>
+                            icon="plus"
+                            onPress={() => handleAddIngredient(food.id)}>
                             Add Ingredient
                           </Button>
                           <Button
                             mode="contained"
                             style={{
                               backgroundColor: colors.error,
+                              marginTop: 5,
                             }}
+                            icon="delete"
                             onPress={() => handleDeleteMenuItem(food.id)}>
-                            Delete Menu Item
+                            {`Delete ${food.menu_item}`}
                           </Button>
                         </View>
                       </List.Accordion>
@@ -410,7 +452,12 @@ const MealDetails = ({route}: IProps) => {
           )}
           <Button
             mode="contained"
-            style={{maxWidth: '75%', alignSelf: 'center', marginBottom: 10}}>
+            style={{maxWidth: '75%', alignSelf: 'center', marginBottom: 10}}
+            onPress={() =>
+              handleNewMenuItem(
+                meals.meals.filter((el: any) => el.meal === 'Snack')[0].meal_id,
+              )
+            }>
             Add Menu Item
           </Button>
         </Surface>

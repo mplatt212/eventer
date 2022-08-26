@@ -7,7 +7,7 @@ export const mealFetch = async () => {
 
   try {
     await fetch(
-      `http://10.0.2.2:3000/meals/${store.selectedEvent?.event_id}`,
+      `http://192.168.1.15:3000/meals/${store.selectedEvent?.event_id}`,
       options,
     )
       .then(r => r.json())

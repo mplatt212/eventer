@@ -107,7 +107,7 @@ const AddDateModal = ({edit, setEdit}: IProps) => {
     };
     try {
       await fetch(
-        `http://10.0.2.2:3000/new_meal_date/${date}/${Array.from(
+        `http://192.168.1.15:3000/new_meal_date/${date}/${Array.from(
           new Set(mealTypes),
         )}/${store.selectedEvent?.event_id}`,
         options,

@@ -46,6 +46,7 @@ export class Store {
   newDateModalOpen: boolean = false;
   newMealModalOpen: boolean = false;
   newMenuItemModalOpen: boolean = false;
+  newIngredientModalOpen: boolean = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -87,6 +88,10 @@ export class Store {
 
   setNewMenuItemModalOpen(bool: boolean) {
     this.newMenuItemModalOpen = bool;
+  }
+
+  setNewIngredientModalOpen(bool: boolean) {
+    this.newIngredientModalOpen = bool;
   }
 }
 

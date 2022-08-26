@@ -4,7 +4,7 @@ export const eventEdit = async (id: number) => {
   };
 
   try {
-    await fetch(`http://10.0.2.2:3000/fetch_event/${id}`, options)
+    await fetch(`http://192.168.1.15:3000/fetch_event/${id}`, options)
       .then(r => r.json())
       .then(data => {
         console.log('/fetch_event', data);

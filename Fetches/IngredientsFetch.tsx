@@ -6,7 +6,10 @@ export const ingredientsFetch = async (event_id: number, date: Date) => {
   };
 
   try {
-    await fetch(`http://10.0.2.2:3000/ingredients/${event_id}/${date}`, options)
+    await fetch(
+      `http://192.168.1.15:3000/ingredients/${event_id}/${date}`,
+      options,
+    )
       .then(r => r.json())
       .then(data => {
         console.log('/ingredients', data);

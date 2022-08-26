@@ -4,9 +4,9 @@ export const eventFetch = async () => {
   const options = {
     method: 'GET',
   };
-
+  //For nodemon use http://192.168.1.15:3000
   try {
-    await fetch('http://10.0.2.2:3000/events', options)
+    await fetch('http://192.168.1.15:3000/events', options)
       .then(r => r.json())
       .then(data => {
         console.log('/events', data);

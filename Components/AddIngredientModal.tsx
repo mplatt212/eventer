@@ -1,3 +1,4 @@
+import {runInAction} from 'mobx';
 import {observer} from 'mobx-react';
 import React, {Dispatch, SetStateAction, useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
@@ -6,71 +7,82 @@ import {
   Headline,
   Modal,
   Portal,
+  TextInput,
   Button,
-  //useTheme,
+  useTheme,
 } from 'react-native-paper';
 import {FormBuilder} from 'react-native-paper-form-builder';
+import {ingredientsFetch} from '../Fetches/IngredientsFetch';
 import store from '../Store/Store';
 
 interface IProps {
   edit: boolean;
   setEdit: Dispatch<SetStateAction<boolean>>;
-  mealID: number;
-  handleRefresh: () => void;
+  menuItemID: number;
+  meals: any;
 }
 
-const AddMenuItemModal = ({edit, setEdit, mealID, handleRefresh}: IProps) => {
-  //const {colors} = useTheme();
-  const [menuItem, setMenuItem] = useState<string>('');
+interface IDates {
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+}
+
+const AddIngredientModal = ({edit, setEdit, menuItemID, meals}: IProps) => {
+  const {colors} = useTheme();
+  const [ingName, setIngName] = useState<string>('');
   const {control, setFocus, handleSubmit, setValue} = useForm({
     defaultValues: {
-      meal_id: -1,
-      menu_item: menuItem,
+      id: -1,
+      name: '',
     },
     mode: 'onChange',
   });
 
   const handleModalClose = () => {
-    store.setNewMenuItemModalOpen(false);
-    setMenuItem('');
-    setValue('menu_item', '');
+    store.setNewIngredientModalOpen(false);
+    setValue('id', -1);
+    setValue('name', '');
     setEdit(false);
-    handleRefresh();
   };
 
-  const submitData = async (item: any) => {
-    console.log('submit event', item);
+  const submitData = async (ingData: any) => {
     const options = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(item),
+      body: JSON.stringify(ingData),
     };
-    try {
-      await fetch(
-        `http://192.168.1.15:3000/new_menu_item/${mealID}/${menuItem}`,
-        options,
-      )
-        .then(r => r.json())
-        .then(data => {
-          console.log('/new_meal_date', data);
-          handleModalClose();
-        });
-      setEdit(false);
-    } catch (err) {
-      console.log('Error', err);
-    }
+    console.log(ingData.name);
+    await fetch(
+      `http://192.168.1.15:3000/add_ingredient/${menuItemID}/${ingData.name}`,
+      options,
+    )
+      .then(r => r.json())
+      .then(data => console.log(data))
+      .then(() =>
+        ingredientsFetch(
+          store.selectedEvent?.event_id as number,
+          meals.date.slice(0, 19).replace('T', ' ').split(' ')[0],
+        ),
+      );
+    setEdit(false);
+    handleModalClose();
   };
 
   useEffect(() => {
-    setValue('meal_id', mealID);
-  }, [mealID, setValue]);
+    runInAction(() => {
+      if (edit && store.selectedEvent) {
+        setValue('id', store.selectedEvent.event_id);
+        setValue('name', store.selectedEvent.name);
+      }
+    });
+  }, [edit, setValue]);
 
   return (
     <Portal>
       <Modal
-        visible={store.newMenuItemModalOpen}
+        visible={store.newIngredientModalOpen}
         dismissable={false}
         style={{
           backgroundColor: '#FFF',
@@ -87,7 +99,7 @@ const AddMenuItemModal = ({edit, setEdit, mealID, handleRefresh}: IProps) => {
                 fontSize: 30,
                 textAlign: 'center',
               }}>
-              {edit ? 'Edit Meal' : 'Add New Menu Item'}
+              {edit ? 'Edit Ingredient' : 'Add New Ingredient'}
             </Headline>
             <FormBuilder
               control={control}
@@ -95,17 +107,25 @@ const AddMenuItemModal = ({edit, setEdit, mealID, handleRefresh}: IProps) => {
               formConfigArray={[
                 {
                   type: 'text',
-                  name: 'menu_item',
+                  name: 'name',
                   rules: {
                     required: {
                       value: true,
-                      message: 'New menu item is required.',
+                      message: 'Ingredient name is required.',
                     },
-                    onChange: e => setMenuItem(e.target.value),
                   },
                   textInputProps: {
-                    label: 'Menu Item',
-                    value: menuItem,
+                    label: 'Ingredient',
+                    left: <TextInput.Icon name={'script-text-outline'} />,
+                    right: (
+                      <TextInput
+                        value={ingName}
+                        dense={true}
+                        theme={{colors: {primary: colors.accent}}}
+                        style={{maxHeight: 50, width: '85%'}}
+                        onChangeText={text => setIngName(text)}
+                      />
+                    ),
                   },
                 },
               ]}
@@ -135,4 +155,4 @@ const AddMenuItemModal = ({edit, setEdit, mealID, handleRefresh}: IProps) => {
   );
 };
 
-export default observer(AddMenuItemModal);
+export default observer(AddIngredientModal);

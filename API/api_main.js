@@ -263,6 +263,19 @@ app.get('/ingredients/:event_id/:date', (req, res) => {
   );
 });
 
+app.post('/add_ingredient/:food_item_id/:ing_name', (req, res) => {
+  connection.query(
+    `INSERT INTO eventer_db.ingredients (food_item_id, name) VALUES (${req.params.food_item_id}, '${req.params.ing_name}')`,
+    (error, result, fields) => {
+      if (error) {
+        throw error;
+      }
+
+      res.send(result);
+    },
+  );
+});
+
 app.post('/delete_ingredient/:ing_id', (req, res) => {
   connection.query(
     `DELETE FROM eventer_db.ingredients WHERE ingred_id = ${req.params.ing_id}`,
