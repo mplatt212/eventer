@@ -148,7 +148,6 @@ const MealDetails = ({route}: IProps) => {
                                     right={() => (
                                       <IconButton
                                         icon="delete"
-                                        style={{flex: 1}}
                                         onPress={() =>
                                           handleDeleteIng(ing.ingred_id)
                                         }

@@ -1,6 +1,7 @@
 import {makeAutoObservable} from 'mobx';
 import {makePersistable} from 'mobx-persist-store';
 import localForage from 'localforage';
+import AuthStore from './AuthStore';
 
 export type MealTypes = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 
@@ -33,6 +34,8 @@ interface IIngredient {
 }
 
 export class Store {
+  authStore: AuthStore;
+
   //Event Variables
   events: IEvent[] = [];
   selectedEvent: IEvent | undefined = undefined;
@@ -56,6 +59,8 @@ export class Store {
       properties: ['selectedEvent'],
       storage: localForage,
     });
+
+    this.authStore = new AuthStore(this);
   }
 
   setEvents(events: IEvent[]) {

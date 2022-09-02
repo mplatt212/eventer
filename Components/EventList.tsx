@@ -100,7 +100,6 @@ const EventList = ({navigation}: IProps) => {
               onTouchEnd={() => {
                 navigation.navigate('Event Details', {
                   event: event,
-                  screen: 'Event Details Tab',
                   params: {event: event},
                 });
 

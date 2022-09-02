@@ -1,6 +1,6 @@
 const express = require('express');
 const mysql = require('mysql2');
-const bodyParser = require('body-parser');
+const auth = require('./api_auth');
 
 const connection = mysql.createConnection({
   host: '127.0.0.1',
@@ -12,9 +12,11 @@ const connection = mysql.createConnection({
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded());
+app.use('/auth', auth);
 
-app.get('/test', (req, res) => {
-  res.send('testing...');
+app.get('/', (req, res) => {
+  res.send('You made it to the main API.');
 });
 
 app.get('/events', (req, res) => {

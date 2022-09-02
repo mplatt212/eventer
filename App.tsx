@@ -3,55 +3,84 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
 import {IconButton} from 'react-native-paper';
-import EventDetails from './Pages/EventDetails';
-import Home, {IProps} from './Pages/Home';
+import Home from './Pages/Home';
 import MealDetails from './Pages/MealDetails';
 import MealsList from './Pages/MealsList';
 import {navTheme} from './Theme';
+import Account from './Pages/Account';
+import Login from './Pages/Login';
+import EventDetails from './Pages/EventDetails';
+import store from './Store/Store';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const HomeTab = ({navigation}: IProps) => {
+const LoginStack = () => {
   return (
     <>
-      <Tab.Navigator>
-        <Tab.Screen
-          name="Home"
-          component={Home}
-          options={{
-            title: 'Home',
-            tabBarIcon: () => (
-              <IconButton
-                icon="home"
-                onPress={() => navigation.navigate('Home')}
-              />
-            ),
-          }}
-        />
-      </Tab.Navigator>
+      <Stack.Navigator>
+        <Stack.Screen name="Login" component={Login} />
+      </Stack.Navigator>
     </>
   );
 };
 
-const EventDetailsTab = ({navigation}: IProps) => {
+const HomeStack = () => {
   return (
     <>
-      <Tab.Navigator>
-        <Tab.Screen
-          name="Event Details Tab"
-          component={EventDetails}
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen
+          name="Home"
+          component={Home}
           options={{
-            title: 'Home',
-            tabBarIcon: () => (
-              <IconButton
-                icon="home"
-                onPress={() => navigation.navigate('Home')}
-              />
-            ),
+            headerRight: () => <IconButton icon="cog" />,
           }}
         />
-      </Tab.Navigator>
+        <Stack.Screen
+          name="Event Details"
+          component={EventDetails}
+          options={{
+            headerRight: () => <IconButton icon="cog" />,
+          }}
+        />
+        <Stack.Screen
+          name="Meal List"
+          component={MealsList}
+          options={{
+            headerRight: () => <IconButton icon="cog" />,
+          }}
+        />
+        <Stack.Screen
+          name="Meal Details"
+          component={MealDetails}
+          options={{
+            headerRight: () => <IconButton icon="cog" />,
+          }}
+        />
+        <Stack.Screen
+          name="Account"
+          component={Account}
+          options={{
+            headerRight: () => <IconButton icon="cog" />,
+          }}
+        />
+      </Stack.Navigator>
+    </>
+  );
+};
+
+const AccountStack = () => {
+  return (
+    <>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen
+          name="Account"
+          component={Account}
+          options={{
+            headerRight: () => <IconButton icon="cog" />,
+          }}
+        />
+      </Stack.Navigator>
     </>
   );
 };
@@ -59,20 +88,30 @@ const EventDetailsTab = ({navigation}: IProps) => {
 const App = () => {
   return (
     <NavigationContainer theme={navTheme}>
-      <Stack.Navigator>
-        {/* <Stack.Screen name="Root" component={HomeTab} /> */}
-        <Stack.Screen
-          name="Home"
-          component={HomeTab}
-          options={{
-            headerShown: false,
-            headerRight: () => <IconButton icon="cog" />,
-          }}
-        />
-        <Stack.Screen name="Event Details" component={EventDetailsTab} />
-        <Stack.Screen name="Meal List" component={MealsList} />
-        <Stack.Screen name="Meal Details" component={MealDetails} />
-      </Stack.Navigator>
+      {store.authStore.loggedIn ? (
+        <Tab.Navigator>
+          <Tab.Screen
+            name="Home"
+            component={HomeStack}
+            options={{
+              title: 'Home',
+              headerShown: false,
+              tabBarIcon: () => <IconButton icon="home" />,
+            }}
+          />
+          <Tab.Screen
+            name="Account"
+            component={AccountStack}
+            options={{
+              title: 'Account',
+              headerShown: false,
+              tabBarIcon: () => <IconButton icon="account" />,
+            }}
+          />
+        </Tab.Navigator>
+      ) : (
+        <LoginStack />
+      )}
     </NavigationContainer>
   );
 };
