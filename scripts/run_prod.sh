@@ -1,0 +1,1 @@
+cd front_end && npx react-native start  && npx react-native run-android

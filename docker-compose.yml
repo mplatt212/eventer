@@ -1,0 +1,59 @@
+version: '3.3'
+services:
+  db:
+    build:
+      context: db
+    command:  mysqld --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+       - "./sql-scripts:/docker-entrypoint-initdb.d"
+       - "./mysql:/var/run/mysqld"
+    environment:
+      - MYSQL_DATABASE=eventer_db
+      - MYSQL_PASSWORD=Mwp2123847!
+      - MYSQL_ROOT_PASSWORD=Mwp2123847!
+    ports:
+      - '3307:3306'
+    expose:
+      - "3307"
+      - "3306"
+
+  front_end:
+    build: ./web/front_end
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      - NODE_ENV=development
+      # - WDS_SOCKET_PORT=0
+      - CI=false
+      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/android/ndk/21.4.7075529:/opt/android/cmake/3.18.1/bin:/opt/android/cmdline-tools/latest/bin:/opt/android/emulator:/opt/android/platform-tools:/opt/android/tools:/opt/android/tools/bin:/opt/buck/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    ports:
+      - "8081:8081"
+      - "5038:5037"
+      - "5554:5554"
+      - "5555:5555"
+      - "5900:5900"
+    volumes:
+      - ./web/front_end:/app
+      - /app/node_modules
+    depends_on:
+      - db
+
+  192.168.68.61:
+    build:
+      context: web/192.168.68.61
+    environment:
+      - WATCHPACK_POLLING=true
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_NAME=eventer_db
+      - DB_PASSWORD=Mwp2123847!
+      - NODE_ENV=development
+      - WDS_SOCKET_PORT=0
+    volumes:
+      - ./web/192.168.68.61:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
