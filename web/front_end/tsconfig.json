@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "isolatedModules": true,
+        "jsx": "react-native",
+        "lib": [
+            "es2017"
+        ],
+        "moduleResolution": "node",
+        "noEmit": true,
+        "strict": true,
+        "target": "esnext"
+    },
+    "exclude": [
+        "node_modules",
+        "web/front_end/babel.config.js",
+        "web/front_end/metro.config.js",
+        "web/front_end/jest.config.js"
+    ]
+}
